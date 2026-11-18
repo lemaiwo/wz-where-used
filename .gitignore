@@ -44,3 +44,6 @@ _out/
 default-*.json
 *_mta_build_tmp
 @cds-models
+
+# Browser test artifacts
+.playwright-mcp/

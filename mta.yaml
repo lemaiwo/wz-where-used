@@ -1,7 +1,7 @@
 _schema-version: 3.3.0
 ID: wz-where-used
 version: 1.0.0
-description: "A simple CAP project."
+description: "Where-used analysis for SAP Build Work Zone content (roles, catalogs, groups, spaces, pages)"
 parameters:
   enable-parallel-deployments: true
   deploy_mode: html5-repo
@@ -27,6 +27,7 @@ modules:
     requires:
       - name: wz-where-used-auth
       - name: wz-where-used-db
+      - name: wz-where-used-destination
 
   - name: wz-where-used-db-deployer
     type: hdb
@@ -35,6 +36,79 @@ modules:
       buildpack: nodejs_buildpack
     requires:
       - name: wz-where-used-db
+
+  - name: wz-where-used-app-deployer
+    type: com.sap.application.content
+    path: gen
+    build-parameters:
+      build-result: app/
+      requires:
+        - name: wzwhereusedwhereused
+          artifacts:
+            - whereused.zip
+          target-path: app/
+    requires:
+      - name: wz-where-used-auth
+      - name: srv-api
+      - name: wz-where-used-html5-repo-host
+        parameters:
+          content-target: true
+          config:
+            HTML5Runtime_enabled: true
+    parameters:
+      config:
+        destinations:
+          - Name: srv-api
+            URL: ~{srv-api/srv-url}
+            Authentication: NoAuthentication
+            Type: HTTP
+            ProxyType: Internet
+            ForwardAuthToken: true
+            DynamicDestination: true
+
+  - name: wzwhereusedwhereused
+    type: html5
+    path: app/whereused
+    build-parameters:
+      build-result: dist
+      builder: custom
+      commands:
+        - npm ci
+        - npm run build
+      supported-platforms:
+        []
+
+  - name: wz-where-used-destinations
+    type: com.sap.application.content
+    requires:
+      - name: wz-where-used-auth
+        parameters:
+          service-key:
+            name: wz-where-used-auth-key
+      - name: wz-where-used-html5-repo-host
+        parameters:
+          service-key:
+            name: wz-where-used-html5-repo-host-key
+      - name: srv-api
+      - name: wz-where-used-destination
+        parameters:
+          content-target: true
+    build-parameters:
+      no-source: true
+    parameters:
+      content:
+        instance:
+          existing_destinations_policy: update
+          destinations:
+            - Name: wz-where-used-html5-repository
+              ServiceInstanceName: wz-where-used-html5-repo-host
+              ServiceKeyName: wz-where-used-html5-repo-host-key
+              sap.cloud.service: wzwhereused.service
+            - Name: wz-where-used-auth
+              Authentication: OAuth2UserTokenExchange
+              ServiceInstanceName: wz-where-used-auth
+              ServiceKeyName: wz-where-used-auth-key
+              sap.cloud.service: wzwhereused.service
 
 resources:
   - name: wz-where-used-auth
@@ -50,11 +124,30 @@ resources:
           credential-types:
             - "binding-secret"
             - "x509"
+        role-collections:
+          - name: 'WhereUsedViewer (wz-where-used ${org}-${space})'
+            description: 'Work Zone Where-Used'
+            role-template-references:
+              - '$XSAPPNAME.WhereUsedViewer'
+          - name: 'WhereUsedAdmin (wz-where-used ${org}-${space})'
+            description: 'Work Zone Where-Used'
+            role-template-references:
+              - '$XSAPPNAME.WhereUsedViewer'
+              - '$XSAPPNAME.WhereUsedAdmin'
   - name: wz-where-used-db
     type: com.sap.xs.hdi-container
     parameters:
       service: hana
       service-plan: hdi-shared
+  - name: wz-where-used-destination
+    type: org.cloudfoundry.managed-service
+    parameters:
+      service: destination
+      service-plan: lite
+      config:
+        HTML5Runtime_enabled: true
+    requires:
+      - name: srv-api
 
   - name: wz-where-used-html5-repo-host
     type: org.cloudfoundry.managed-service

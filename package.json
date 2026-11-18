@@ -5,22 +5,57 @@
   "dependencies": {
     "@cap-js/hana": "^3",
     "@sap/cds": "^10",
-    "@sap/xssec": "^4"
+    "@sap/xssec": "^4",
+    "jszip": "^3.10.2"
   },
   "devDependencies": {
     "@cap-js/sqlite": "^3",
-    "@sap/cds-dk": "^10"
+    "@sap/cds-dk": "^10",
+    "@sap/eslint-plugin-cds": "^4",
+    "cds-plugin-ui5": "^0.17.4",
+    "eslint": "^10"
   },
   "scripts": {
-    "start": "cds-serve"
+    "start": "cds-serve",
+    "watch": "cds watch",
+    "test": "node --test test/*.test.js",
+    "lint": "eslint ."
   },
   "private": true,
+  "description": "Where-used analysis for SAP Build Work Zone content (roles, catalogs, groups, spaces, pages)",
   "cds": {
+    "server": {
+      "body_parser": {
+        "limit": "100mb"
+      }
+    },
     "requires": {
+      "[development]": {
+        "auth": {
+          "kind": "mocked",
+          "users": {
+            "admin": {
+              "password": "admin",
+              "roles": [
+                "WhereUsedViewer",
+                "WhereUsedAdmin"
+              ]
+            },
+            "viewer": {
+              "password": "viewer",
+              "roles": [
+                "WhereUsedViewer"
+              ]
+            }
+          }
+        }
+      },
       "[production]": {
         "auth": "xsuaa"
       },
-      "html5-repo": true
+      "destinations": true,
+      "html5-repo": true,
+      "workzone": true
     }
   }
 }

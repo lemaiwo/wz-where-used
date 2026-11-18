@@ -1,6 +1,31 @@
 {
-  "scopes": [],
+  "scopes": [
+    {
+      "name": "$XSAPPNAME.WhereUsedViewer",
+      "description": "Read Work Zone where-used data"
+    },
+    {
+      "name": "$XSAPPNAME.WhereUsedAdmin",
+      "description": "Import Work Zone content exports"
+    }
+  ],
   "attributes": [],
-  "role-templates": [],
-  "authorities-inheritance": false
+  "role-templates": [
+    {
+      "name": "WhereUsedViewer",
+      "description": "Read Work Zone where-used data",
+      "scope-references": [
+        "$XSAPPNAME.WhereUsedViewer"
+      ],
+      "attribute-references": []
+    },
+    {
+      "name": "WhereUsedAdmin",
+      "description": "Import Work Zone content exports",
+      "scope-references": [
+        "$XSAPPNAME.WhereUsedAdmin"
+      ],
+      "attribute-references": []
+    }
+  ]
 }
