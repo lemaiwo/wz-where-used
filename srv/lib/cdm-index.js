@@ -65,7 +65,87 @@ export function collectEntities(docs) {
     for (const v of Object.values(node)) if (v && typeof v === 'object') visit(v, depth + 1);
   };
   docs.forEach(d => visit(d, 0));
+
+  // Spaces and pages of the "new experience" are not exported as CDM entities but as flat data rows
+  // of the cep-runtime-agent (nested content.zip). Turn them into CDM-like entities and merge.
+  for (const agentEntity of collectAgentEntities(docs)) {
+    const { entityType, id } = agentEntity.identification;
+    const key = keyOf(entityType, id);
+    const cdm = found.get(key);
+    if (!cdm) { found.set(key, agentEntity); continue; }
+    // A CDM entity exists too: keep its texts, but add the relations / payload only the agent data has.
+    const relations = { ...(cdm.relations || {}) };
+    for (const [name, refs] of Object.entries(agentEntity.relations || {})) relations[name] = [...(relations[name] || []), ...refs];
+    found.set(key, { ...cdm, relations, agentPayload: agentEntity.payload });
+  }
   return [...found.values()];
+}
+
+/* ------------------------------------------- cep-runtime-agent data rows */
+
+// Row shapes of agents/cep-runtime-agent/content.zip (1_DataFile_<X>.json), recognised by their keys:
+const isSpaceRow = r => typeof r.id === 'string' && typeof r.language === 'string' && r.descriptor?.value && !r.contents && !('workPageVizsId' in r);
+const isPageVersionRow = r => typeof r.id === 'string' && typeof r.language === 'string' && Array.isArray(r.workPageVizsId);   // WPV
+const isSpacePageRow = r => typeof r.spaceId === 'string' && typeof r.workPageId === 'string';                                 // SP-WP
+const isPageVizRow = r => typeof r.workPageId === 'string' && typeof r.visualizationId === 'string';                           // WP-VZ
+
+const AGENT_REF_CONTEXT = { id: 'SUB_ACCOUNT', type: 'SUB_ACCOUNT' };
+const agentRef = (entityType, id) => ({ label: 'ref', target: { id, context: AGENT_REF_CONTEXT, entityType } });
+
+/** Rows exist once per language; "master" (or its "raw" copy) holds the default texts. */
+const LANGUAGE_RANK = l => (l === 'master' ? 0 : l === 'raw' ? 1 : /^en/i.test(l) ? 2 : 3);
+function pickLanguageRow(rows) {
+  return rows.reduce((best, r) => (!best || LANGUAGE_RANK(r.language) < LANGUAGE_RANK(best.language) ? r : best), null);
+}
+
+/** Convert cep-runtime-agent space / page rows into CDM-like entities ({ identification, relations, payload }). */
+export function collectAgentEntities(docs) {
+  const spaceRows = new Map(), pageRows = new Map(), spacePages = [], pageVizs = [];
+  const group = (map, r) => { if (!map.has(r.id)) map.set(r.id, []); map.get(r.id).push(r); };
+  const visit = (node, depth) => {
+    if (!node || typeof node !== 'object' || depth > 40) return;
+    if (Array.isArray(node)) { node.forEach(n => visit(n, depth + 1)); return; }
+    if (node.identification) return;   // CDM entity, handled elsewhere
+    if (isPageVersionRow(node)) return group(pageRows, node);
+    if (isSpaceRow(node)) return group(spaceRows, node);
+    if (isSpacePageRow(node)) return spacePages.push(node);
+    if (isPageVizRow(node)) return pageVizs.push(node);
+    for (const v of Object.values(node)) if (v && typeof v === 'object') visit(v, depth + 1);
+  };
+  docs.forEach(d => visit(d, 0));
+
+  const entities = [];
+  for (const [id, rows] of spaceRows) {
+    const row = pickLanguageRow(rows);
+    const text = row.descriptor.value;
+    const pages = spacePages.filter(sp => sp.spaceId === id)
+      .sort((a, b) => (a.sortNumber ?? 0) - (b.sortNumber ?? 0))
+      .map(sp => agentRef('workpage', sp.workPageId));
+    entities.push({
+      identification: { id, entityType: 'space', title: text.title, description: text.description, providerId: row.providerId },
+      relations: { workpages: pages }
+    });
+  }
+  // spaces referenced only via SP-WP still get their page relation (title stays a placeholder)
+  for (const sp of spacePages) {
+    if (spaceRows.has(sp.spaceId)) continue;
+    let e = entities.find(x => x.identification.entityType === 'space' && x.identification.id === sp.spaceId);
+    if (!e) entities.push(e = { identification: { id: sp.spaceId, entityType: 'space', title: sp.spaceId, placeholderTitle: true }, relations: { workpages: [] } });
+    e.relations.workpages.push(agentRef('workpage', sp.workPageId));
+  }
+
+  const pageIds = new Set([...pageRows.keys(), ...spacePages.map(sp => sp.workPageId), ...pageVizs.map(v => v.workPageId)]);
+  for (const id of pageIds) {
+    const rows = pageRows.get(id) || [];
+    const row = pickLanguageRow(rows);
+    const text = row?.contents?.descriptor?.value || row?.mergedEntity?.descriptor?.value || {};
+    const vizIds = new Set([...rows.flatMap(r => r.workPageVizsId || []), ...pageVizs.filter(v => v.workPageId === id).map(v => v.visualizationId)]);
+    entities.push({
+      identification: { id, entityType: 'workpage', title: text.title || id, description: text.description, providerId: row?.providerId, placeholderTitle: !text.title },
+      payload: { workPageVizsId: [...vizIds], rows: row?.contents?.rows || [] }
+    });
+  }
+  return entities;
 }
 
 export const keyOf = (type, id) => `${type}:${id}`;
@@ -107,6 +187,7 @@ export function buildIndex(entities) {
 
   for (const e of entities) {
     const ident = e.identification;
+    if (ident.placeholderTitle) { addItem(ident.entityType, ident.id, { placeholder: true }); continue; }
     addItem(ident.entityType, ident.id, {
       title: clean(resolveText(e, ident.title)) || ident.id,
       description: clean(resolveText(e, ident.description)) || '',
@@ -142,9 +223,9 @@ export function buildIndex(entities) {
   // Page layouts are not always expressed as relations: scan page payloads for app ids.
   const appIds = [...items.values()].filter(i => i.type === 'businessapp').map(i => i.id);
   for (const e of entities) {
-    if (!PAGE_TYPES.has(e.identification.entityType) || !e.payload) continue;
+    if (!PAGE_TYPES.has(e.identification.entityType) || !(e.payload || e.agentPayload)) continue;
     const parentKey = keyOf(e.identification.entityType, e.identification.id);
-    const text = JSON.stringify(e.payload);
+    const text = JSON.stringify([e.payload, e.agentPayload]);
     for (const appId of appIds) {
       if (text.includes(`"${appId}"`) || text.includes(`"${appId}#`)) addEdge(parentKey, keyOf('businessapp', appId), 'pageContent');
     }
