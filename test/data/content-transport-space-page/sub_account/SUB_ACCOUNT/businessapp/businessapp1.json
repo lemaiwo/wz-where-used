@@ -1,0 +1,122 @@
+[
+    {
+        "metadata": {
+            "updatedOn": 1795022511785,
+            "updatedBy": "Test User",
+            "createdBy": "Test User",
+            "createdOn": 1795022511785,
+            "context": {
+                "id": "SUB_ACCOUNT",
+                "contextType": "sub_account",
+                "tenantId": "00000000000000000000000000000000",
+                "identityZoneId": "00000000-0000-0000-0000-000000000000",
+                "instanceId": "00000000-0000-0000-0000-000000000000"
+            }
+        },
+        "cdm": {
+            "texts": {
+                "cdm|identification|title": {
+                    "type": "XTIT",
+                    "value": {
+                        "": "Sample App"
+                    }
+                },
+                "cdm|identification|description": {
+                    "type": "XTIT",
+                    "value": {
+                        "": ""
+                    }
+                },
+                "cdm|payload|visualizations|Default-VizId|vizConfig|sap.app|info": {
+                    "type": "XTIT",
+                    "value": {
+                        "": ""
+                    }
+                },
+                "cdm|payload|visualizations|Default-VizId|vizConfig|sap.app|subTitle": {
+                    "type": "XTIT",
+                    "value": {
+                        "": ""
+                    }
+                }
+            },
+            "payload": {
+                "defaultViz": "Default-VizId",
+                "defaultVizType": "sap.ushell.StaticAppLauncher",
+                "visualizations": {
+                    "Default-VizId": {
+                        "vizType": "sap.ushell.StaticAppLauncher",
+                        "vizConfig": {
+                            "sap.ui": {
+                                "icons": {
+                                    "icon": ""
+                                }
+                            },
+                            "sap.app": {
+                                "info": "{{cdm|payload|visualizations|Default-VizId|vizConfig|sap.app|info}}",
+                                "subTitle": "{{cdm|payload|visualizations|Default-VizId|vizConfig|sap.app|subTitle}}"
+                            },
+                            "sap.flp": {
+                                "target": {
+                                    "type": "IBN",
+                                    "inboundId": "cf569959-63c0-447a-89e9-4caf5cdd80e2___GenericDefaultSemantic-__GenericDefaultAction",
+                                    "parameters": {}
+                                }
+                            }
+                        }
+                    }
+                },
+                "targetAppConfig": {
+                    "sap.ui": {
+                        "deviceTypes": {
+                            "phone": true,
+                            "tablet": true,
+                            "desktop": true
+                        }
+                    },
+                    "sap.app": {
+                        "tags": {
+                            "keywords": []
+                        },
+                        "destination": "",
+                        "crossNavigation": {
+                            "inbounds": {
+                                "cf569959-63c0-447a-89e9-4caf5cdd80e2___GenericDefaultSemantic-__GenericDefaultAction": {
+                                    "action": "display",
+                                    "signature": {
+                                        "parameters": {},
+                                        "additionalParameters": "allowed"
+                                    },
+                                    "deviceTypes": {
+                                        "phone": true,
+                                        "tablet": true,
+                                        "desktop": true
+                                    },
+                                    "semanticObject": "App"
+                                }
+                            }
+                        }
+                    },
+                    "_version": "1.13.0",
+                    "sap.integration": {
+                        "navMode": "inplace",
+                        "urlTemplateId": "urltemplate.url",
+                        "urlTemplateParams": {
+                            "url": "https://sap.com",
+                            "query": {},
+                            "enableSapParams": true,
+                            "enableIntentParams": false
+                        }
+                    }
+                }
+            },
+            "_version": "3.0",
+            "identification": {
+                "id": "cf569959-63c0-447a-89e9-4caf5cdd80e2",
+                "title": "{{cdm|identification|title}}",
+                "entityType": "businessapp",
+                "description": "{{cdm|identification|description}}"
+            }
+        }
+    }
+]

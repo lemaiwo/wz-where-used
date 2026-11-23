@@ -1,0 +1,155 @@
+[
+    {
+        "id": "ce128938-a5bb-4c91-befa-8d23eb3cdf06",
+        "editable": true,
+        "isDefault": true,
+        "configurations": [
+            {
+                "id": "5f41472e-72b4-437f-9bba-70d152646b95",
+                "level": "CO",
+                "settings": {
+                    "value": {},
+                    "schemaVersion": "3.2.0"
+                }
+            }
+        ],
+        "descriptor": {
+            "value": {
+                "icon": "sap-icon://document-text",
+                "title": "Mein Bereich",
+                "sortNumber": 0,
+                "description": ""
+            },
+            "schemaVersion": "3.2.0"
+        },
+        "language": "de_DE",
+        "providerId": "SUB_ACCOUNT",
+        "mergedEntity": {
+            "value": {
+                "icon": "sap-icon://document-text",
+                "title": "Mein Bereich",
+                "sortNumber": 0,
+                "description": ""
+            },
+            "schemaVersion": "3.2.0"
+        },
+        "cdmContentVersion": "~DEFAULT~"
+    },
+    {
+        "id": "ce128938-a5bb-4c91-befa-8d23eb3cdf06",
+        "editable": true,
+        "isDefault": true,
+        "configurations": [
+            {
+                "id": "5f41472e-72b4-437f-9bba-70d152646b95",
+                "level": "CO",
+                "settings": {
+                    "value": {},
+                    "schemaVersion": "3.2.0"
+                }
+            }
+        ],
+        "descriptor": {
+            "value": {
+                "icon": "sap-icon://document-text",
+                "title": "My Space",
+                "sortNumber": 0,
+                "description": ""
+            },
+            "schemaVersion": "3.2.0"
+        },
+        "language": "en",
+        "providerId": "SUB_ACCOUNT",
+        "mergedEntity": {
+            "value": {
+                "icon": "sap-icon://document-text",
+                "title": "My Space",
+                "sortNumber": 0,
+                "description": ""
+            },
+            "schemaVersion": "3.2.0"
+        },
+        "cdmContentVersion": "~DEFAULT~"
+    },
+    {
+        "id": "ce128938-a5bb-4c91-befa-8d23eb3cdf06",
+        "editable": true,
+        "isDefault": true,
+        "configurations": [
+            {
+                "id": "5f41472e-72b4-437f-9bba-70d152646b95",
+                "level": "CO",
+                "settings": {
+                    "value": {},
+                    "schemaVersion": "3.2.0"
+                }
+            }
+        ],
+        "descriptor": {
+            "value": {
+                "icon": "sap-icon://document-text",
+                "title": "My Space",
+                "sortNumber": 0,
+                "description": ""
+            },
+            "schemaVersion": "3.2.0"
+        },
+        "language": "master",
+        "providerId": "SUB_ACCOUNT",
+        "mergedEntity": {
+            "value": {
+                "icon": "sap-icon://document-text",
+                "title": "My Space",
+                "sortNumber": 0,
+                "description": ""
+            },
+            "schemaVersion": "3.2.0"
+        },
+        "cdmContentVersion": "~DEFAULT~"
+    },
+    {
+        "id": "ce128938-a5bb-4c91-befa-8d23eb3cdf06",
+        "editable": true,
+        "isDefault": true,
+        "configurations": [
+            {
+                "id": "5f41472e-72b4-437f-9bba-70d152646b95",
+                "level": "CO",
+                "settings": {
+                    "value": {
+                        "texts": {
+                            "en": {
+                                "/title": "My Space"
+                            },
+                            "de_DE": {
+                                "/title": "Mein Bereich"
+                            }
+                        }
+                    },
+                    "schemaVersion": "3.2.0"
+                }
+            }
+        ],
+        "descriptor": {
+            "value": {
+                "icon": "sap-icon://document-text",
+                "title": "My Space",
+                "sortNumber": 0,
+                "description": ""
+            },
+            "schemaVersion": "3.2.0"
+        },
+        "language": "raw",
+        "providerId": "SUB_ACCOUNT",
+        "mergedEntity": {
+            "value": {
+                "icon": "sap-icon://document-text",
+                "title": "My Space",
+                "sortNumber": 0,
+                "description": ""
+            },
+            "schemaVersion": "3.2.0"
+        },
+        "cdmContentVersion": "~DEFAULT~"
+    }
+]

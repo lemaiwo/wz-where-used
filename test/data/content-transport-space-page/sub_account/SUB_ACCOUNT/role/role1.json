@@ -1,0 +1,71 @@
+[
+    {
+        "metadata": {
+            "updatedOn": 1795022613588,
+            "updatedBy": "Test User",
+            "createdBy": "Test User",
+            "createdOn": 1795022613588,
+            "context": {
+                "id": "SUB_ACCOUNT",
+                "contextType": "sub_account",
+                "tenantId": "00000000000000000000000000000000",
+                "identityZoneId": "00000000-0000-0000-0000-000000000000",
+                "instanceId": "00000000-0000-0000-0000-000000000000"
+            }
+        },
+        "cdm": {
+            "texts": {
+                "cdm|identification|title": {
+                    "type": "XTIT",
+                    "value": {
+                        "": "Employee"
+                    }
+                },
+                "cdm|identification|description": {
+                    "type": "XTIT",
+                    "value": {
+                        "": ""
+                    }
+                }
+            },
+            "payload": {
+                "apps": []
+            },
+            "_version": "3.0",
+            "relations": {
+                "apps": [
+                    {
+                        "label": "ref",
+                        "target": {
+                            "id": "cf569959-63c0-447a-89e9-4caf5cdd80e2",
+                            "context": {
+                                "id": "SUB_ACCOUNT",
+                                "type": "SUB_ACCOUNT"
+                            },
+                            "entityType": "businessapp"
+                        }
+                    }
+                ],
+                "spaces": [
+                    {
+                        "label": "ref",
+                        "target": {
+                            "id": "ce128938-a5bb-4c91-befa-8d23eb3cdf06",
+                            "context": {
+                                "id": "SUB_ACCOUNT",
+                                "type": "SUB_ACCOUNT"
+                            },
+                            "entityType": "space"
+                        }
+                    }
+                ]
+            },
+            "identification": {
+                "id": "Employee",
+                "title": "{{cdm|identification|title}}",
+                "entityType": "role",
+                "description": "{{cdm|identification|description}}"
+            }
+        }
+    }
+]

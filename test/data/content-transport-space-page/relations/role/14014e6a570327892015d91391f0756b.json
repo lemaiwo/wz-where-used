@@ -1,0 +1,14 @@
+{
+    "id": "Employee",
+    "relations": {
+        "businessapp": [
+            "cf569959-63c0-447a-89e9-4caf5cdd80e2"
+        ],
+        "sitereferences": [
+            "sitereferences.default"
+        ],
+        "space": [
+            "ce128938-a5bb-4c91-befa-8d23eb3cdf06"
+        ]
+    }
+}
